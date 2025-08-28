@@ -1,0 +1,63 @@
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: ${PG_USER}
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
+      POSTGRES_DB: ${PG_DB}
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  minio:
+    image: minio/minio:latest
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USERNAME}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+
+  create-bucket:
+    image: minio/mc
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      sleep 5;
+      echo '⏳ Waiting for MinIO to be ready...';
+      mc alias set myminio http://minio:9000 ${MINIO_ROOT_USERNAME} ${MINIO_ROOT_PASSWORD};
+      mc mb myminio/${S3_BUCKET} || true;
+      echo '✅ MinIO bucket ${S3_BUCKET} is ready.';
+      mc mb myminio/${RAW_BUCKET} || true;
+      echo '✅ MinIO bucket ${RAW_BUCKET} is ready.';
+      mc mb myminio/${BRONZE_BUCKET} || true;
+      echo '✅ MinIO bucket ${BRONZE_BUCKET} is ready.';
+      mc mb myminio/${SILVER_BUCKET} || true;
+      echo '✅ MinIO bucket ${SILVER_BUCKET} is ready.';
+      mc mb myminio/${GOLD_BUCKET} || true;
+      echo '✅ MinIO bucket ${GOLD_BUCKET} is ready.';
+      "
+    env_file: .env
+
+  ducklake-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres
+      - minio
+      - create-bucket
+    env_file: .env
+    volumes:
+      - ./init_ducklake.sql:/app/init_ducklake.sql
+    stdin_open: true
+    tty: true
+
+volumes:
+  pg_data:
+  minio_data:

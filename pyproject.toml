@@ -1,0 +1,32 @@
+[project]
+name = "ducknews_lake"
+authors = [
+    { name = "Nik", email = "hi@nik.codes"}
+    ]
+version = "0.1.0"
+description = "Ducklake with postgres and minio integration"
+requires-python = ">=3.12"
+dependencies = [
+    "beautifulsoup4>=4.13.4",
+    "boto3>=1.40.15",
+    "duckdb>=1.3.2",
+    "psycopg2-binary>=2.9.10",
+    "python-dotenv>=1.1.1",
+    "sqlmesh>=0.210.0",
+]
+
+[build-system]
+requires = ["uv_build>=0.8.13,<0.9.0"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "ducknews_lake"
+module-root = ""
+
+[dependency-groups]
+dev = [
+    "watchfiles>=1.1.0",
+]
+
+[tool.uv]
+index-url = "https://pypi.org/simple"

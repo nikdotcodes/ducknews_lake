@@ -1,0 +1,16 @@
+gateways:
+  ducklake:
+    connection:
+      type: duckdb
+      database: ":memory:"
+      extensions:
+        - ducklake
+        - postgres
+        - httpfs
+    model_defaults:
+      dialect: "duckdb"
+
+default_gateway: ducklake
+
+model_defaults:
+  dialect: "duckdb"
