@@ -1,0 +1,14 @@
+.venv/
+.env
+data/
+.processed_zips
+.idea/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.swp
+*.swo
+.DS_Store
+.vscode/
+.ipynb_checkpoints/
