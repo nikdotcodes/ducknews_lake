@@ -10,7 +10,9 @@ pg_host = (
     os.environ["PG_HOST_DOCKER"] if running_in_docker else os.environ["PG_HOST_LOCAL"]
 )
 s3_endpoint = (
-    os.environ["S3_ENDPOINT_DOCKER"] if running_in_docker else os.environ["S3_ENDPOINT_LOCAL"]
+    os.environ["S3_ENDPOINT_DOCKER"]
+    if running_in_docker
+    else os.environ["S3_ENDPOINT_LOCAL"]
 )
 
 # Path to SQL file
@@ -39,4 +41,4 @@ con.execute(sql_script)
 
 print("✅ DuckLake is initialized and ready!")
 print("📊 Demo table contents:")
-print(con.execute("SELECT * FROM demo.demo_table").fetchall())
+con.query("SELECT * FROM demo.demo_table").show()

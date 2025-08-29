@@ -47,8 +47,3 @@ python:
 .PHONY: watch
 watch:
 	uv run watchfiles "python ducknews_lake/main.py" --recursive ducknews_lake/
-
-# Run SQLMesh locally
-.PHONY: sqlmesh
-sqlmesh:
-	uv run sqlmesh --config-file ducknews_lake/sqlmesh/config.yaml run

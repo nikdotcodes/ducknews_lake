@@ -1,14 +1,26 @@
+# Python virtual environments
 .venv/
 .env
+
+# Data and processed files
 data/
+logs/
 .processed_zips
+
+# IDE and editor settings
 .idea/
+.vscode/
+.ipynb_checkpoints/
+
+# Python cache and compiled files
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
+
+# Swap files
 *.swp
 *.swo
+
+# macOS system files
 .DS_Store
-.vscode/
-.ipynb_checkpoints/
