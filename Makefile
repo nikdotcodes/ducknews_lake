@@ -47,3 +47,8 @@ python:
 .PHONY: watch
 watch:
 	uv run watchfiles "python ducknews_lake/main.py" --recursive ducknews_lake/
+
+# Run raw loading pipelines
+.PHONY: raw
+raw:
+	uv run python ducknews_lake/raw_pipeline.py

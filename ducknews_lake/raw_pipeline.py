@@ -6,10 +6,16 @@ from pathlib import Path
 import boto3
 from dotenv import load_dotenv
 
+
+print("🚀 Starting EL pipeline...")
+print("🔎 Loading environment variables...")
+
 load_dotenv()
+
 # Detect environment
 running_in_docker = os.path.exists("/.dockerenv")
 
+# Setting up MinIO/S3 connection
 MINIO_ENDPOINT = (
     os.getenv("MINIO_ENDPOINT_DOCKER")
     if running_in_docker
@@ -29,6 +35,7 @@ PROCESSED_FILE = Path(".processed_zips")
 
 def get_processed_set():
     if PROCESSED_FILE.exists():
+        print("🗄 Loading processed set...")
         return set(PROCESSED_FILE.read_text().splitlines())
     return set()
 
@@ -36,9 +43,11 @@ def get_processed_set():
 def add_to_processed_file(zip_name: str):
     with open(PROCESSED_FILE, "a") as f:
         f.write(zip_name + "\n")
+    print("🗄️Logging processed file...")
 
 
 def list_github_zip_links():
+    print("🏗️Gathering zip links from GitHub...")
     r = requests.get(GITHUB_API_INDEX)
     r.raise_for_status()
 
@@ -57,7 +66,7 @@ def upload_file_to_bucket(file_path: Path, key: str):
     print(f"Uploaded {file_path} to s3://{RAW_BUCKET}/{key}")
 
 
-def main():
+def pull_fake_news_from_github():
     processed = get_processed_set()
     zip_links = list_github_zip_links()
 
@@ -66,7 +75,7 @@ def main():
         if zip_name in processed:
             continue
 
-        print(f"⤵️ Downloading {zip_name}...")
+        print(f"⤵️ Downloading {zip_name} from GitHub...")
         r = requests.get(link)
         r.raise_for_status()
 
@@ -81,10 +90,7 @@ def main():
                     tmp_file_path.write_bytes(f.read())
                     s3_key = f"{BUCKET_PREFIX}/{member}"
                     upload_file_to_bucket(tmp_file_path, s3_key)
-                    print(f"📤 Uploaded {s3_key}")
+                    print(f"📤 Uploaded {s3_key} to s3")
 
         add_to_processed_file(zip_name)
-
-
-if __name__ == "__main__":
-    main()
+    print("🎉 Raw pipeline completed successfully!")
